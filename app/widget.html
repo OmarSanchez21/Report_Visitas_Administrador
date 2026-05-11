@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Visitas Modular</title>
+
+    <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/tables.css">
+</head>
+
+<body class="app">
+
+    <div class="header">
+        <span>🏆</span>
+        <h1>Ranking de Challenge — Visitas</h1>
+    </div>
+
+    <div class="filters">
+        <div class="fg">
+            <label>Fecha Inicio</label>
+            <input type="date" id="fi">
+        </div>
+
+        <div class="fg">
+            <label>Fecha Fin</label>
+            <input type="date" id="ff">
+        </div>
+
+        <button class="btn" id="btnGen" onclick="window.generar()">
+            📊 Generar Informe
+        </button>
+
+        <button class="btn" id="btnExport" onclick="window.exportarExcel()">
+            📥 Exportar Excel
+        </button>
+
+        <button class="btn-refresh" id="btnRefresh" onclick="window.generar()">
+            <span id="refreshIcon">↻</span>
+        </button>
+    </div>
+
+    <div class="content main-layout">
+        <div id="cardsContainer"></div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="window.cambiarTab(0, this)">👤 Personas</button>
+            <button class="tab" onclick="window.cambiarTab(1, this)">🏢 Departamentos</button>
+            <button class="tab" onclick="window.cambiarTab(2, this)">📋 Detalle</button>
+        </div>
+
+        <div class="tab-panel active" id="p0">
+            <div class="table-wrapper">
+                <div class="table-title">Ranking por Persona <span class="badge" id="lblP">---</span></div>
+                <div class="tbl-scroll" id="tP"></div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="p1">
+            <div class="table-wrapper">
+                <div class="table-title">Ranking por Departamento <span class="badge" id="lblD">---</span></div>
+                <div class="tbl-scroll" id="tD"></div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="p2">
+            <div class="table-wrapper">
+                <div class="table-title">Desglose Detallado <span class="badge" id="lblDet">---</span></div>
+                <div class="tbl-scroll" id="tDet"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="appModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-box" style="background:#fff; border-radius:8px; padding:24px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+            <button onclick="window.cerrarModal()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
+            <h2 id="modalTitle" style="margin:0 0 16px;"></h2>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module" src="init.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+/* --- BASE & TIPOGRAFÍA --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
+    background: #f0f4f8; 
+    color: #1a202c; 
+    font-size: 13px; 
+    line-height: 1.4;
+}
+
+/* --- ELEMENTOS COMUNES --- */
+.spinning { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.pill { padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+.pill-si { background: #dcfce7; color: #15803d; }
+.pill-no { background: #fee2e2; color: #b91c1c; }

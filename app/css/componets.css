@@ -1,0 +1,18 @@
+/* --- CARDS --- */
+.cards-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.card { 
+    background: white; border-radius: 12px; padding: 16px; 
+    border-left: 4px solid #2d6a9f; transition: all 0.2s ease;
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+
+/* --- TABS --- */
+.tabs { display: flex; gap: 4px; background: #e2e8f0; padding: 4px; border-radius: 10px 10px 0 0; }
+.tab.active { background: white; color: #2d6a9f; }
+
+/* --- MODAL --- */
+.modal {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+}
+.modal.active { display: flex; }
