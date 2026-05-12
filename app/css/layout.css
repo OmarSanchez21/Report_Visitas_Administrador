@@ -35,3 +35,32 @@
 .tab-panel.active {
     display: block;
 }
+
+.tabs {
+    display: flex;
+    width: 100%;
+    background: #f8fafc; /* Fondo gris muy claro */
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.tab {
+    flex: 1; /* Esto hace que cada tab ocupe el mismo espacio */
+    padding: 15px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 700;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.tab.active {
+    background: white;
+    color: #2d6a9f;
+    border-bottom: 3px solid #2d6a9f;
+    margin-bottom: -2px; /* Pisa el borde del contenedor */
+}
