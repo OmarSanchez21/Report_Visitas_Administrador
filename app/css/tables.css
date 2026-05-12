@@ -1,18 +1,31 @@
-/* Badges de Rol */
-.pill-role {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: capitalize;
+/* --- TABLAS --- */
+.table-wrapper { background: white; border-radius: 0 10px 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0; }
+.table-title { padding: 14px 20px; font-size: 0.85rem; font-weight: 700; color: #2d3748; border-bottom: 1px solid #e2e8f0; background: #fcfdfe; }
+.badge { font-size: 0.7rem; background: #ebf4ff; color: #2d6a9f; padding: 3px 10px; border-radius: 12px; font-weight: 700; margin-left: 8px; }
+
+.tbl-scroll { overflow: auto; max-height: 72vh; }
+table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+
+thead th {
+    background: #f8fafc;
+    padding: 12px 15px;
+    position: sticky; top: 0; z-index: 10;
+    text-align: left; font-size: 0.65rem;
+    text-transform: uppercase; color: #64748b; font-weight: 800;
+    border-bottom: 2px solid #e2e8f0;
 }
+
+tbody tr { border-bottom: 1px solid #f1f5f9; }
+tbody tr:hover:not(.dept-row):not(.subtotal-row) { background: #f8fafc; }
+td { padding: 12px 15px; font-size: 0.85rem; color: #4a5568; }
+
+.dept-row td { background: #f0f7ff; font-weight: 800; color: #1e3a5f; border-bottom: 1px solid #bee3f8; }
+.subtotal-row td { background: #f8fbff; font-weight: 700; color: #2d6a9f; border-top: 1px dashed #bee3f8; }
+
+/* Badges de Rol */
+.pill-role { padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: capitalize; }
 .role-organizador { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
 .role-colaborador { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
 
-/* Sticky Header de Departamento en la tabla */
-.dept-group-header {
-    background: #f1f5f9 !important;
-    font-weight: 800;
-    color: #334155;
-    font-size: 0.8rem;
-}
+/* Sticky Header de Departamento */
+.dept-group-header { background: #f1f5f9 !important; font-weight: 800; color: #334155; font-size: 0.8rem; }

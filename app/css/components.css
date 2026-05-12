@@ -72,6 +72,7 @@
     transform: translateY(-4px); 
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); 
     border-color: #fcfdfe;
+    border-left-color: inherit;
 }
 
 .card-total { 
@@ -97,7 +98,7 @@
 
 /* --- CONTENIDO INTERNO --- */
 .card-lbl { 
-    font-size: 0.6rem; 
+    font-size: 0.8rem; 
     color: #718096; 
     text-transform: uppercase; 
     font-weight: 800; 
@@ -130,14 +131,14 @@
 }
 
 .card-dept-stat span:first-child { 
-    font-size: 0.6rem; 
+    font-size: 0.9rem; 
     color: #94a3b8; 
     text-transform: uppercase; 
     font-weight: 700; 
 }
 
 .card-dept-stat span:last-child { 
-    font-size: 0.6rem; 
+    font-size: 0.9rem; 
     font-weight: 800; 
     color: #334155;
     white-space: nowrap; /* Evita que el número salte de línea */
@@ -146,7 +147,7 @@
 /* Efecto de clic para ver detalles (opcional) */
 .card .view-more {
     margin-top: 12px;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     color: #2563eb;
     font-weight: 600;
     text-align: right;
