@@ -1,4 +1,10 @@
 export const UI = {
+    initDates() {
+        const h = new Date();
+        const fmt = (d) => d.toISOString().split("T")[0];
+        document.getElementById("fi").value = fmt(new Date(h.getFullYear(), h.getMonth(), 1));
+        document.getElementById("ff").value = fmt(h);
+    },
     switchTab(idx, el){
         document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
         el.classList.add("active");

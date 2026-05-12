@@ -1,18 +1,65 @@
-/* --- CARDS --- */
-.cards-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-.card { 
-    background: white; border-radius: 12px; padding: 16px; 
-    border-left: 4px solid #2d6a9f; transition: all 0.2s ease;
+/* --- NUEVAS PESTAÑAS (Estilo Dashboard) --- */
+.tabs { 
+    display: flex; 
+    gap: 0; 
+    background: transparent; 
+    padding: 0; 
+    border-bottom: 2px solid #e2e8f0; 
+    width: 100%; 
+    margin-bottom: 0;
 }
-.card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
 
-/* --- TABS --- */
-.tabs { display: flex; gap: 4px; background: #e2e8f0; padding: 4px; border-radius: 10px 10px 0 0; }
-.tab.active { background: white; color: #2d6a9f; }
-
-/* --- MODAL --- */
-.modal {
-    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+.tab {
+    flex: 1; /* Distribuye el ancho equitativamente */
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #f8fafc; /* Fondo sutil para tabs inactivas */
+    color: #64748b;
+    border: none;
+    border-right: 1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
-.modal.active { display: flex; }
+
+.tab:first-child { border-radius: 8px 0 0 0; }
+.tab:last-child { border-right: none; border-radius: 0 8px 0 0; }
+
+.tab.active { 
+    background: white; 
+    color: #2d6a9f; 
+    border-bottom: 3px solid #2d6a9f; /* El subrayado azul */
+    margin-bottom: -2px; /* Para que pise el borde del contenedor */
+    font-weight: 800;
+}
+
+/* --- TARJETAS DE RESUMEN (Cards Grid) --- */
+.cards-grid { 
+    display: grid; 
+    grid-template-columns: 120px 1fr 1fr; /* Una pequeña y dos grandes */
+    gap: 16px; 
+    margin-bottom: 24px; 
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-total { border-left: 5px solid #1e3a5f; }
+.card-dept.postventas { border-left: 5px solid #2d6a9f; }
+.card-dept.ventas { border-left: 5px solid #10b981; } /* Color verde para ventas */
+
+.card-val { font-size: 2rem; line-height: 1; margin-top: 5px; }

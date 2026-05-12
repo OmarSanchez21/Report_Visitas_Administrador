@@ -2,9 +2,11 @@ import { CONFIG } from "../config/fields.js";
 
 export const ZohoService = {
     async runCOQL(query){
-        const resp = await ZOHO.CRM.API.coql({ select_query: query });
+        const cleanQuery = query.replace(/\s+/g, ' ').trim(); // Elimina espacios fantasma
+        const resp = await ZOHO.CRM.API.coql({ select_query: cleanQuery });
         console.log("Respuesta COQL:", resp);
         if(!resp.data && !resp.info) throw new Error("Error: La consulta no devolvió datos");
+        if(resp.code === "INVALID_REQUEST") console.error("Error en un registro:", cleanQuery);
         return resp;
     },
 
