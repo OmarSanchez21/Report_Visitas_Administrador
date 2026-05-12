@@ -38,29 +38,56 @@
 
 .tabs {
     display: flex;
-    width: 100%;
-    background: #f8fafc; /* Fondo gris muy claro */
+    width: fit-content;
+    gap: 4px;
+    border-radius: 10px 10px 0 0;
+    background: #e2e8f0; /* Fondo gris muy claro */
     border-bottom: 2px solid #e2e8f0;
+    padding: 4px;
 }
 
 .tab {
-    flex: 1; /* Esto hace que cada tab ocupe el mismo espacio */
-    padding: 15px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
+    padding: 8px 20px;
+    text-align: center;
+    font-size: 0.8rem;
     font-weight: 700;
+    cursor: pointer;
+    background: transparent;
     color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.2s;
+    border: none;
+    border-radius: 7px;
+    transition: all .2s;
 }
 
 .tab.active {
     background: white;
     color: #2d6a9f;
     border-bottom: 3px solid #2d6a9f;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
     margin-bottom: -2px; /* Pisa el borde del contenedor */
+}
+.ta:hover:not(.active) {
+    background: #f1f5f9;
+    color: #2d6a9f;
+}
+
+/* Ocultar paneles por defecto */
+.tab-panel {
+    display: none; 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Mostrar solo el panel activo */
+.tab-panel.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Contenedor principal de tarjetas para evitar que se amontonen */
+.cards-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr; /* Layout premium: una pequeña y dos grandes */
+    gap: 16px;
+    margin-bottom: 24px;
 }

@@ -1,65 +1,163 @@
-/* --- NUEVAS PESTAÑAS (Estilo Dashboard) --- */
-.tabs { 
-    display: flex; 
-    gap: 0; 
-    background: transparent; 
-    padding: 0; 
-    border-bottom: 2px solid #e2e8f0; 
-    width: 100%; 
-    margin-bottom: 0;
+.tabs {
+    display: flex;
+    width: 100%;
+    background: #f1f5f9; /* Fondo gris claro sutil */
+    border-bottom: 2px solid #e2e8f0;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
 }
 
 .tab {
-    flex: 1; /* Distribuye el ancho equitativamente */
-    padding: 14px 20px;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #f8fafc; /* Fondo sutil para tabs inactivas */
-    color: #64748b;
+    flex: 1; /* Distribución uniforme */
+    padding: 14px;
+    background: transparent;
     border: none;
     border-right: 1px solid #e2e8f0;
-    border-top: 1px solid #e2e8f0;
-    transition: all .2s;
+    color: #64748b;
+    font-weight: 700;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    transition: all 0.2s;
 }
 
-.tab:first-child { border-radius: 8px 0 0 0; }
-.tab:last-child { border-right: none; border-radius: 0 8px 0 0; }
+.tab:last-child { border-right: none; }
 
-.tab.active { 
-    background: white; 
-    color: #2d6a9f; 
-    border-bottom: 3px solid #2d6a9f; /* El subrayado azul */
-    margin-bottom: -2px; /* Para que pise el borde del contenedor */
-    font-weight: 800;
+.tab.active {
+    background: white;
+    color: #2d6a9f;
+    border-bottom: 3px solid #2d6a9f; /* Línea de enfoque azul */
+    margin-bottom: -2px; /* Alineación perfecta con el borde */
 }
 
-/* --- TARJETAS DE RESUMEN (Cards Grid) --- */
+/* --- CONTENEDOR PRINCIPAL --- */
+.content { 
+    padding: 20px; 
+    width: 100%;       /* Ocupa el 100% del espacio disponible */
+    max-width: 100%;    /* Elimina restricciones de ancho */
+    margin: 0;         /* Alinea a la izquierda */
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- GRID DE TARJETAS --- */
 .cards-grid { 
     display: grid; 
-    grid-template-columns: 120px 1fr 1fr; /* Una pequeña y dos grandes */
-    gap: 16px; 
-    margin-bottom: 24px; 
+    /* La primera card ocupa el 20%, las demás se reparten el 80% restante */
+    grid-template-columns: 20% repeat(auto-fit, minmax(10px, 1fr)); 
+    gap: 12px; 
+    width: 100%;
+    margin-bottom: 20px;
+    align-items: stretch; /* Asegura que todas tengan la misma altura */
 }
 
-.card {
-    background: white;
-    border-radius: 10px;
-    padding: 12px 18px;
+/* --- ESTILO BASE DE CARD --- */
+.card { 
+    background: white; 
+    border-radius: 10px; 
+    padding: 8px 12px; /* Reducido para que sea menos larga */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-height: 65px; /* Altura controlada similar a la imagen 2 */
+    transition: transform 0.2s;
 }
 
-.card-total { border-left: 5px solid #1e3a5f; }
-.card-dept.postventas { border-left: 5px solid #2d6a9f; }
-.card-dept.ventas { border-left: 5px solid #10b981; } /* Color verde para ventas */
+.card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); 
+    border-color: #fcfdfe;
+}
 
-.card-val { font-size: 2rem; line-height: 1; margin-top: 5px; }
+.card-total { 
+    border-left: 5px solid #1e3a5f;
+    /* Ya no necesita min-width ni flex porque el grid lo maneja */
+}
+
+.card-dept {
+    flex: 1; /* Ayuda a empujar el contenido si sobra espacio */
+}
+/* Clase dinámica que podrías asignar según el nombre del depto */
+.card-dept.postventas { 
+    border-left: 6px solid #2d6a9f; 
+}
+
+.card-dept.ventas { 
+    border-left: 6px solid #10b981; /* Verde esmeralda para ventas */
+}
+
+.card-dept.preventas {
+    border-left: 6px solid #f59e0b; /* Ambar para preventas */
+}
+
+/* --- CONTENIDO INTERNO --- */
+.card-lbl { 
+    font-size: 0.6rem; 
+    color: #718096; 
+    text-transform: uppercase; 
+    font-weight: 800; 
+    letter-spacing: 0.02em; 
+    margin-bottom: 4px; 
+}
+
+/* --- AJUSTE DE TEXTOS PARA ESPACIO COMPACTO --- */
+.card-val { 
+    font-size: 1rem; /* Un poco más pequeño para que no rompa en pantallas chicas */
+    font-weight: 800; 
+    color: #1a202c; 
+    line-height: 1.2;
+}
+
+/* --- ESTADÍSTICAS SECUNDARIAS (Dentro de Dept) --- */
+.card-dept-stats { 
+    display: flex; 
+    justify-content: space-between;
+    gap: 8px; 
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #f1f5f9; 
+}
+
+.card-dept-stat { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2px;
+}
+
+.card-dept-stat span:first-child { 
+    font-size: 0.6rem; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    font-weight: 700; 
+}
+
+.card-dept-stat span:last-child { 
+    font-size: 0.6rem; 
+    font-weight: 800; 
+    color: #334155;
+    white-space: nowrap; /* Evita que el número salte de línea */
+}
+
+/* Efecto de clic para ver detalles (opcional) */
+.card .view-more {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #2563eb;
+    font-weight: 600;
+    text-align: right;
+    text-decoration: none;
+}
+
+
+.filters {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+}

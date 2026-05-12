@@ -8,7 +8,9 @@ export const UI = {
     switchTab(idx, el){
         document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
         el.classList.add("active");
-        document.querySelectorAll(".tab-panel").forEach((p, i)=> p.classList.toggle("active", i === idx));
+        document.querySelectorAll(".tab-panel").forEach(
+            (p, i)=> p.classList.toggle("active", i === idx)
+        );
     },
     setLoading(){
         ["tP","tD","tDet"].forEach(id =>
