@@ -3,6 +3,7 @@ import { CONFIG } from "../config/fields.js";
 export const ZohoService = {
     async runCOQL(query){
         const resp = await ZOHO.CRM.API.coql({ select_query: query });
+        console.log("Respuesta COQL:", resp);
         if(!resp.data && !resp.info) throw new Error("Error: La consulta no devolvió datos");
         return resp;
     },
@@ -13,6 +14,7 @@ export const ZohoService = {
         let more = true;
         while(more){
             const query = `${baseQuery} LIMIT ${offset}, 200`;
+            console.log("Ejecutando COQL con paginación:", query);
             const res = await this.runCOQL(query);
             const records = res.data || [];
             allRecords.push(...records);
@@ -40,10 +42,12 @@ export const ZohoService = {
                 more = false;
             }
         }
+        console.log("Participantes cargados:", participantes.length);
         return participantes;
     },
 
     async fetchFullVisitas(fi, ff){
+        console.log(`ZohoService: Fetching visitas from ${fi} to ${ff}`);
         const query = `
             SELECT
                 id,
@@ -61,13 +65,13 @@ export const ZohoService = {
                 ${CONFIG.F_TIPO_CLIE},
                 ${CONFIG.F_DETALLES}
             FROM Visita
-            WHERE ${CONFIG.F_FECHA} between '${fi}' and '${ff}'
+            WHERE ${CONFIG.F_FECHA} >= '${fi}' and  ${CONFIG.F_FECHA} <= '${ff}'
         `;
-
-        const [visitas, participantesRAW] = await Promise.all([
-            this.runCOQLPaged(query),
-            this.fetchAllParticipants()
-        ]);
+        
+        const visitas = await this.runCOQLPaged(query);
+        console.log(`Visitas obtenidas: ${visitas.length}`);
+        await new Promise(r => setTimeout(r, 500));
+        const participantesRAW = await this.fetchAllParticipants();
 
         const participantesMap = {};
         participantesRAW.forEach(p => {

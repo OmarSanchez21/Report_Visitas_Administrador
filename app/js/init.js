@@ -1,6 +1,6 @@
-import { ZohoService } from "./js/services/zoho.services.js";
-import { UI_Utils } from "./js/core/ui_utils.js";
-import { visitasManager } from "./js/services/visitas.manager.js";
+import { ZohoService } from "./services/zoho.services.js";
+import { UI_Utils } from "./core/ui_utils.js";
+import { visitasManager } from "./services/visitas.manager.js";
 
 window.USER_MAP = {};
 
@@ -30,6 +30,7 @@ async function generar() {
     }
     UI_Utils.setLoading();
     try {
+        console.log(`Generando informe para fechas: ${fi} a ${ff}`);
         await visitasManager.procesarInforme(fi, ff);
     } catch(error) {
         console.error("Error al generar informe:", error);
