@@ -5,10 +5,10 @@ import { visitasManager } from "./services/visitas.manager.js";
 window.USER_MAP = {};
 
 ZOHO.embeddedApp.on("PageLoad", async function() {
+    console.log("Aplicación embebida cargada. Inicializando...");
     const height = Math.floor(window.innerHeight * 0.85).toString();
     const width = Math.floor(window.innerWidth * 0.95).toString();
     ZOHO.CRM.UI.Resize({ height, width });
-
     try {
         window.USER_MAP = await ZohoService.fetchAllUsers();
         console.log("Usuarios cargados:", window.USER_MAP);
