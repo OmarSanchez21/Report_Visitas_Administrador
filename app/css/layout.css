@@ -5,16 +5,28 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* --- FILTROS --- */
-.filters {
-    background: white; padding: 14px 20px; display: flex; gap: 14px; 
-    align-items: flex-end; flex-wrap: wrap; border-bottom: 1px solid #e2e8f0;
-}
+
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg input { 
     border: 1px solid #cbd5e0; border-radius: 8px; padding: 7px 12px; 
     font-size: 0.85rem; outline: none; transition: all 0.2s;
 }
+.filters {
+    align-items: center;
+}
+.fg label {
+    font-size: 0.65rem; font-weight: 800; color: #718096;
+    text-transform: uppercase; letter-spacing: .05em;
+}
+.btn-refresh {
+    margin-left: auto; background: #ffffff; border: 1px solid #cbd5e0;
+    border-radius: 8px; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s; font-size: 1.1rem;
+}
+.btn-refresh:hover { border-color: #2d6a9f; color: #2d6a9f; }
+.modal-overlay { display: none; }
+.modal-overlay.active { display: flex; }
 
 /* --- BOTONES --- */
 .btn {
@@ -89,10 +101,11 @@
     display: grid;
     grid-template-columns: 140px 1fr 1fr; /* Layout premium: una pequeña y dos grandes */
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
-
+.modal-overlay { display: none; }
+.modal-overlay.active { display: flex; }
 .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; }
 .modal.active { display: flex; }
 .modal-content { background: white; width: fit-content; max-width: 95vw; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); animation: modalIn .25s cubic-bezier(0.4,0,0.2,1); overflow: hidden; }

@@ -26,6 +26,7 @@ export const visitasManager = {
 
         const { personaMap, deptMap, deptStats, totalVisitas, filas, visitasMap } = this._calcularMetricas(visitas);
         window.VISITAS_MAP_GLOBAL = visitasMap;
+        window.DATOS_FILAS_GLOBAL = filas;
         UIRender.renderizarTodo(totalVisitas, deptStats, personaMap, deptMap, fi, ff, filas);
     },
 

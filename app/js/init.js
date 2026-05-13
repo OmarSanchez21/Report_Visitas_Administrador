@@ -20,7 +20,7 @@ ZOHO.embeddedApp.on("PageLoad", async function() {
 })
 
 ZOHO.embeddedApp.init();
-
+UI.initDates();
 async function generar() {
     const fi = document.getElementById("fi").value;
     const ff = document.getElementById("ff").value;
@@ -69,5 +69,3 @@ function exportarExcel() {
 window.generar        = generar;
 window.exportarExcel  = exportarExcel;
 window.cambiarTab     = UI.switchTab;
-window.abrirModal     = UI.abrirModal;
-window.cerrarModal    = UI.cerrarModal;

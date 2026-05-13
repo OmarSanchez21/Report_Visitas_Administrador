@@ -23,7 +23,7 @@ export const DetalleComponent = {
             </tr>`;
             
             tbody += rows.map(r => `
-            <tr onclick="abrirDetalleVisita('${r.visitaId}', '${r.persona}')" style="cursor:pointer">
+            <tr onclick="window.abrirDetalleVisita('${r.visitaId}', '${r.persona}')" style="cursor:pointer">
                 <td><span class="nm">${r.nombre}</span></td>
                 <td>${r.cuenta}</td>
                 <td>${r.tipo_visita}</td> 
