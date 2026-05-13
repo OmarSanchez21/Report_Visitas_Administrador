@@ -39,8 +39,8 @@ export const visitasManager = {
         const challengeControl = new Set();
 
         visitas.forEach(v => {
-            const ownerId   = v[F_OWNER]?.id;
-            const ownerName = window.USER_MAP?.[ownerId]?.name || "Desconocido";
+            const ownerId   = v.ownerId;
+            const ownerName = v.ownerName || "Desconocido";
             const ownerDept = v[F_DEPT_OWNER] || "Sin Dept";
             const deptsColab = v.Departamentos_Colaboradores || [];
             const pV = parseFloat(v[F_PTS_VISITA]) || 0;

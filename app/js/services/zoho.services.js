@@ -71,6 +71,7 @@ export const ZohoService = {
         `;
         
         const visitas = await this.runCOQLPaged(query);
+        console.log(`Primeras visitas obtenidas:`, visitas.slice(0, 5));
         console.log(`Visitas obtenidas: ${visitas.length}`);
         await new Promise(r => setTimeout(r, 500));
         const participantesRAW = await this.fetchAllParticipants();
@@ -93,6 +94,8 @@ export const ZohoService = {
             const pChall  = parseFloat(v[CONFIG.F_PTS_CHALL])  || 0;
             return {
                 ...v,
+                ownerId: v[CONFIG.F_OWNER]?.id,
+                ownerName: window.USER_MAP?.[v.Owner?.id]?.name || "Desconocido",
                 [CONFIG.F_PTS_CHALL]:  Number(pChall.toFixed(2)),
                 [CONFIG.F_PTS_VISITA]: Number(pVisita.toFixed(2)),
                 Participantes: participantes,
@@ -104,16 +107,19 @@ export const ZohoService = {
 
     async fetchAllUsers(){
         try {
-            const data = await ZOHO.CRM.API.getAllUsers({ type: "ActiveUsers" });
+            console.log("ZohoService: Fetching all active users...");
+            const data = await ZOHO.CRM.API.getAllUsers({ Type: "ActiveUsers" });
+            console.log("ZohoService: Users response:", data);
             const userMap = {};
             if(data.users){
                 data.users.forEach(user => {
                     userMap[user.id] = { id: user.id, email: user.email, name: user.full_name };
                 });
             }
+            console.log("ZohoService: Active users fetched:", data);
             return userMap;
         } catch (error) {
-            console.error("Error en ZohoService.fetchAllUsers:", error);
+            console.error("Error in ZohoService.fetchAllUsers:", error);
             throw error;
         }
     }

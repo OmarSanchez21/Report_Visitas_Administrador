@@ -44,120 +44,32 @@
 }
 
 /* --- GRID DE TARJETAS --- */
-.cards-grid { 
-    display: grid; 
-    /* La primera card ocupa el 20%, las demás se reparten el 80% restante */
-    grid-template-columns: 20% repeat(auto-fit, minmax(10px, 1fr)); 
-    gap: 12px; 
-    width: 100%;
-    margin-bottom: 20px;
-    align-items: stretch; /* Asegura que todas tengan la misma altura */
-}
+.cards-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
 
-/* --- ESTILO BASE DE CARD --- */
-.card { 
-    background: white; 
-    border-radius: 10px; 
-    padding: 16px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    border: 1px solid #edf2f7;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: transform 0.2s;
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-left: 4px solid #2d6a9f;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
-
-.card:hover { 
-    transform: translateY(-4px); 
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); 
-    border-color: #fcfdfe;
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     border-left-color: inherit;
 }
 
-.card-total { 
-    border-left: 5px solid #1e3a5f;
-    /* Ya no necesita min-width ni flex porque el grid lo maneja */
-}
+.card-total { min-width: 140px; flex: 0 0 auto; }
+.card-dept  { flex: 1 1 180px; }
 
-.card-dept {
-    flex: 1; /* Ayuda a empujar el contenido si sobra espacio */
-}
-/* Clase dinámica que podrías asignar según el nombre del depto */
-.card-dept.postventas { 
-    border-left: 6px solid #2d6a9f; 
-}
+.card-lbl { font-size: 0.67rem; color: #718096; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+.card-val { font-size: 1.5rem; font-weight: 800; }
+.card-hint { font-size: 0.68rem; color: #a0aec0; margin-top: 6px; }
 
-.card-dept.ventas { 
-    border-left: 6px solid #10b981; /* Verde esmeralda para ventas */
-}
-
-.card-dept.preventas {
-    border-left: 6px solid #f59e0b; /* Ambar para preventas */
-}
-
-/* --- CONTENIDO INTERNO --- */
-.card-lbl { 
-    font-size: 0.7rem; 
-    color: #718096; 
-    text-transform: uppercase; 
-    font-weight: 800; 
-    letter-spacing: 0.02em; 
-    margin-bottom: 4px; 
-}
-
-/* --- AJUSTE DE TEXTOS PARA ESPACIO COMPACTO --- */
-.card-val { 
-    font-size: 1rem; /* Un poco más pequeño para que no rompa en pantallas chicas */
-    font-weight: 800; 
-    color: #1a202c; 
-    line-height: 1.2;
-}
-
-/* --- ESTADÍSTICAS SECUNDARIAS (Dentro de Dept) --- */
-.card-dept-stats { 
-    display: flex; 
-    justify-content: space-between;
-    gap: 8px; 
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px solid #f1f5f9; 
-}
-
-.card-dept-stat { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 2px;
-}
-
-.card-dept-stat span:first-child { 
-    font-size: 0.9rem; 
-    color: #94a3b8; 
-    text-transform: uppercase; 
-    font-weight: 700; 
-}
-
-.card-dept-stat span:last-child { 
-    font-size: 0.9rem; 
-    font-weight: 800; 
-    color: #334155;
-    white-space: nowrap; /* Evita que el número salte de línea */
-}
-
-/* Efecto de clic para ver detalles (opcional) */
-.card .view-more {
-    margin-top: 12px;
-    font-size: 0.9rem;
-    color: #2563eb;
-    font-weight: 600;
-    text-align: right;
-    text-decoration: none;
-}
-
-
-.filters {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 20px;
-}
+.card-dept .card-lbl { font-size: 0.72rem; color: #1e3a5f; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+.card-dept-stats { display: flex; gap: 12px; }
+.card-dept-stat { display: flex; flex-direction: column; gap: 1px; }
+.s-label { font-size: 0.6rem; color: #718096; text-transform: uppercase; font-weight: 700; }
+.s-value { font-size: 1rem; font-weight: 800; }
