@@ -30,19 +30,27 @@ function _procesarMetricasCategoria(filas) {
 }
 
 function _generarTablaHTML(subtitulo, rows) {
-    const sH = `padding:12px; font-size:0.65rem; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; border-bottom:2px solid #e2e8f0;`;
-    const sC = `padding:14px 12px; font-size:0.85rem; border-bottom:1px solid #f1f5f9;`;
+    const totalGlobal = rows.reduce((s, r) => s + r.total, 0);
+    const pct = (val, tot) => tot > 0 ? Math.round((val / tot) * 100) : 0;
 
-    const tbody = rows.map(r => `
+    const sH  = `padding:12px; font-size:0.65rem; color:#64748b; text-transform:uppercase;
+                 letter-spacing:0.05em; border-bottom:2px solid #e2e8f0; text-align:center; white-space:nowrap;`;
+    const sHL = `${sH} text-align:left;`;
+    const sHR = `${sH} text-align:right;`;
+    const sC  = `padding:14px 12px; font-size:0.85rem; border-bottom:1px solid #f1f5f9; text-align:center;`;
+    const sPct = `padding:14px 6px; font-size:0.78rem; border-bottom:1px solid #f1f5f9; text-align:center; color:#94a3b8; font-weight:600;`;
+
+    const tbody = rows.map(r => {
+    return `
         <tr>
-            <td style="${sC} font-weight:700; color:#1e293b;">${r.dept}</td>
-            <td style="${sC} text-align:center;"><span style="color:#2563eb; font-weight:600;">${r.negocios.toFixed(2)}</span></td>
-            <td style="${sC} text-align:center;"><span style="color:#64748b;">${r.tecnica.toFixed(2)}</span></td>
-            <td style="${sC} text-align:center;"><span style="color:#059669; font-weight:600;">${r.presencial.toFixed(2)}</span></td>
-            <td style="${sC} text-align:center;"><span style="color:#64748b;">${r.virtual.toFixed(2)}</span></td>
+            <td style="${sC} text-align:left; font-weight:700; color:#1e293b;">${r.dept}</td>
+            <td style="${sC}"><span style="color:#2563eb; font-weight:600;">${r.negocios.toFixed(2)}</span> <span style="color:#94a3b8; font-size:0.78rem;">(${pct(r.negocios, r.total)}%)</span></td>
+            <td style="${sC}"><span style="color:#64748b;">${r.tecnica.toFixed(2)}</span> <span style="color:#94a3b8; font-size:0.78rem;">(${pct(r.tecnica, r.total)}%)</span></td>
+            <td style="${sC}"><span style="color:#059669; font-weight:600;">${r.presencial.toFixed(2)}</span> <span style="color:#94a3b8; font-size:0.78rem;">(${pct(r.presencial, r.total)}%)</span></td>
+            <td style="${sC}"><span style="color:#64748b;">${r.virtual.toFixed(2)}</span> <span style="color:#94a3b8; font-size:0.78rem;">(${pct(r.virtual, r.total)}%)</span></td>
             <td style="${sC} text-align:right;"><span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:800; color:#0f172a;">${r.total.toFixed(2)}</span></td>
-        </tr>
-    `).join("");
+        </tr>`;
+    }).join("");
 
     return `
         <div style="font-family:'Inter', system-ui, sans-serif; color:#1e293b;">
@@ -54,15 +62,15 @@ function _generarTablaHTML(subtitulo, rows) {
                 </div>
             </div>
             <div style="overflow-x:auto; background:white; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1);">
-                <table style="width:100%; border-collapse:collapse; min-width:550px;">
+                <table style="width:100%; border-collapse:collapse; min-width:650px;">
                     <thead>
                         <tr style="background:#f8fafc;">
-                            <th style="${sH} text-align:left;">Departamento</th>
+                            <th style="${sHL}">Departamento</th>
                             <th style="${sH}">Negocios</th>
                             <th style="${sH}">Técnica</th>
                             <th style="${sH}">Presencial</th>
                             <th style="${sH}">Virtual</th>
-                            <th style="${sH} text-align:right;">Total PtsV</th>
+                            <th style="${sHR}">Total PtsV</th>
                         </tr>
                     </thead>
                     <tbody>${tbody}</tbody>

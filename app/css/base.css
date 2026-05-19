@@ -1,7 +1,7 @@
 /* --- BASE & TIPOGRAFÍA --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { 
-    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
+    font-family: 'Segoe UI', sans-serif; 
     background: #f0f4f8; 
     color: #1a202c; 
     font-size: 13px; 

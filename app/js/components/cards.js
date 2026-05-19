@@ -24,11 +24,10 @@ export const CardsComponent = {
                     </div>
                 </div>
             </div>
-            <div class="card-hint">Click para ver categorías →</div>
         </div>`;
         list.forEach(([dept, s], i) => {
             const col = DEPT_COLORS[i % DEPT_COLORS.length] || "#ccc";
-            html += `<div class="card card-dept" style="border-top: 4px solid ${col}; cursor:pointer;" onclick="window.abrirResumenCategoriaDepto('${dept}')">
+            html += `<div class="card card-dept" style="border-top: 4px solid ${col}; border-left: 4px solid ${col}; cursor:pointer;" onclick="window.abrirResumenCategoriaDepto('${dept}')">
                 <div class="card-lbl" style="font-weight:700; color:#475569;">${dept}</div>
                 <div class="card-dept-stats" style="margin-top:10px;">
                     <div class="card-dept-stat">
@@ -44,7 +43,6 @@ export const CardsComponent = {
                         <span class="s-value" style="color:#38a169">${s.pC}</span>
                     </div>
                 </div>
-                <div class="card-hint">Ver puntos 📈</div>
             </div>`;
         });
 

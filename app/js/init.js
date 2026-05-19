@@ -1,6 +1,7 @@
 import { ZohoService } from "./services/zoho.services.js";
 import { UI } from "./core/ui.js";
 import { visitasManager } from "./services/visitas.manager.js";
+import { DetalleComponent } from "./components/detalles.js";
 
 window.USER_MAP = {};
 
@@ -83,3 +84,6 @@ function exportarExcel() {
 window.generar        = generar;
 window.exportarExcel  = exportarExcel;
 window.cambiarTab     = UI.switchTab;
+window.reRenderDetalle = () => {
+    DetalleComponent.render(window.DATOS_FILAS_GLOBAL);
+};

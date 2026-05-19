@@ -39,7 +39,10 @@
         <button class="btn" id="btnExport" onclick="window.exportarExcel()">
             📥 Exportar Excel
         </button>
-
+        <label class="chk-Igualas">
+            <input type="checkbox" id="chkIgualas" onchange="window.reRenderDetalle()" class="chk-Igualas-input">
+            Incluir Igualas
+        </label>
         <button class="btn-refresh" id="btnRefresh" onclick="window.generar()">
             <span id="refreshIcon">↻</span>
         </button>

@@ -45,6 +45,7 @@ window.abrirDetallePersona = function (nombrePersona) {
                     <th style="padding:10px;">Acomp. (Depts)</th>
                     <th style="padding:10px; text-align:right">Tipo de Visita</th>
                     <th style="padding:10px; text-align:right">Tipo de Cliente</th>
+                    <th style="padding:10px; text-align:right">Igualas</th>
                     <th style="padding:10px; text-align:right">Pts. V</th>
                     <th style="padding:10px; text-align:right">Pts. C</th>
                 </tr>
@@ -65,6 +66,7 @@ window.abrirDetallePersona = function (nombrePersona) {
                         <td style="padding:10px; color:#4a5568; font-size:0.82em">${v.deptContraparte}</td>
                         <td style="padding:10px; text-align:right; color:#718096">${v.tipo_visita}</td>
                         <td style="padding:10px; text-align:right; color:#718096">${v.tipo_clie}</td>
+                        <td style="padding:10px; text-align:right; color:#718096">${v.esIguala ? 'Sí' : 'No'}</td>
                         <td style="padding:10px; text-align:right; font-weight:700; color:#2d6a9f">${v.ptsV}</td>
                         <td style="padding:10px; text-align:right; font-weight:700; color:#38a169">${v.ptsC}</td>
                     </tr>
@@ -108,6 +110,7 @@ window.abrirDetalleVisita = function (visitaId) {
                 ${_infoChip('📋 Tipo de Visita', v.tipo_visita)}
                 ${_infoChip('💻 Modalidad', v.modalidad)}
                 ${_infoChip('🔍 Detección', v.deteccion)}
+                ${_infoChip('🤝 Igualas', v.esIguala ? 'Sí' : 'No')}
             </div>
             <div>
                 <h4 style="margin-bottom:12px; font-size:0.88rem; color:#4a5568; font-weight:600;

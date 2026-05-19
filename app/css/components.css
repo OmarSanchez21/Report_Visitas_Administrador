@@ -34,7 +34,7 @@
 
 /* --- CONTENEDOR PRINCIPAL --- */
 .content { 
-    padding: 20px; 
+    padding: 6px 20px; 
     width: 100%;       /* Ocupa el 100% del espacio disponible */
     max-width: 100%;    /* Elimina restricciones de ancho */
     margin: 0;         /* Alinea a la izquierda */

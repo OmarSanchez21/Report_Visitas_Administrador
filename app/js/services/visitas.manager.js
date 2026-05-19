@@ -4,7 +4,7 @@ import { CONFIG } from '../config/fields.js';
 
 const { F_OWNER, F_NOMBRE, F_CUENTA_NAME, F_FECHA, F_MODALIDAD, F_TIPO_VISITA,
         F_TIPO_CLIE, F_DETECCION, F_DETALLES, F_PTS_VISITA, F_PTS_CHALL,
-        F_DEPT_OWNER, F_ACOMP } = CONFIG;
+        F_DEPT_OWNER, F_ACOMP, F_IGUALAS } = CONFIG;
 
 export const visitasManager = {
     async procesarInforme(fi, ff) {
@@ -58,6 +58,7 @@ export const visitasManager = {
                 detalles:    v[F_DETALLES]    || "Sin descripción",
                 ptsV: pV,
                 ptsC: pC,
+                esIguala: v[F_IGUALAS] === "Si" || v[F_IGUALAS] == "Si"
             };
 
             // Mapa global para modales
@@ -127,7 +128,6 @@ export const visitasManager = {
             deptMap[f.dept].ptsV = Number((deptMap[f.dept].ptsV + f.ptsV).toFixed(2));
             deptMap[f.dept].ptsC = Number((deptMap[f.dept].ptsC + f.ptsC).toFixed(2));
             const key = f.nombre + "_" + f.dept;
-            if (!challengeCtrl.has(key)) { deptMap[f.dept].count++; challengeCtrl.add(key); }
             if (f.rol === "Organizador") deptMap[f.dept].count++;
         });
 

@@ -1,10 +1,17 @@
+const fecha = f => {
+    if (!f) return '—';
+    const [y,m,d] = f.split("-"); 
+    return `${d}/${m}/${y}`;
+};
 export const DetalleComponent = {
     render(filas) {
+        const mostrarIgualas = document.getElementById("chkIgualas")?.checked ?? false;
+        const filasFiltradas = mostrarIgualas ? filas : filas.filter(r => !r.esIguala || r.tipo_visita === "Negocios" || r.deteccion === "Si");
         const container = document.getElementById("tDet");
-        if (!filas.length) { container.innerHTML = `<div class="state">Sin registros</div>`; return; }
+        if (!filasFiltradas.length) { container.innerHTML = `<div class="state">Sin registros</div>`; return; }
 
         const grupos = {};
-        filas.forEach(f => {
+        filasFiltradas.forEach(f => {
             if (!grupos[f.dept]) grupos[f.dept] = [];
             grupos[f.dept].push(f);
         });
@@ -28,12 +35,32 @@ export const DetalleComponent = {
                 <td>${r.cuenta}</td>
                 <td>${r.tipo_visita}</td> 
                 <td>${r.persona}</td>
-                <td class="c"><span class="pill ${r.rol === 'Organizador' ? 'pill-org' : 'pill-par'}">${r.rol}</span></td>
+                <td class="c"><span class="pill-role ${r.rol === 'Organizador' ? 'role-organizador' : 'role-colaborador'}">${r.rol}</span></td>
                 <td>${r.modalidad}</td><td>${r.tipo_clie}</td><td>${r.deteccion}</td><td>${r.deptContraparte}</td>
-                <td>${r.fecha}</td><td class="r">${r.ptsV}</td><td class="r">${r.ptsC}</td>
+                <td>${fecha(r.fecha)}</td><td class="r">${r.ptsV}</td><td class="r">${r.ptsC}</td>
             </tr>`).join("");
         }
 
-        container.innerHTML = `<table>...<thead><tr></tr></thead><tbody>${tbody}</tbody></table>`;
+        container.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Visita</th>
+                        <th>Cuenta</th>
+                        <th>Tipo Visita</th>
+                        <th>Persona</th>
+                        <th class="c">Rol</th>
+                        <th>Modalidad</th>
+                        <th>Tipo Cliente</th>
+                        <th>Detección</th>
+                        <th>Depts. Acomp.</th>
+                        <th>Fecha</th>
+                        <th class="r">Pts. V</th>
+                        <th class="r">Pts. C</th>
+                    </tr>
+                </thead>
+                <tbody>${tbody}</tbody>
+            </table>
+        `;
     }
 };
