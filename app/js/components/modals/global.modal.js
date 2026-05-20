@@ -1,8 +1,25 @@
 window.abrirModalResumenGlobal = function () {
     if (!window.DATOS_FILAS_GLOBAL?.length) return;
-    const stats = _procesarMetricasCategoria(window.DATOS_FILAS_GLOBAL);
-    const html  = _generarTablaHTML("Comparativa Global por Departamento", stats);
-    abrirModal("Resumen General de Puntos", html);
+
+    const filas = window.DATOS_FILAS_GLOBAL;
+    const filasUnicas = filas.filter(r => !r.esIguala || r.deteccion === "Si");
+
+    const statsUnicas = _procesarMetricasCategoria(filasUnicas);
+    const statsTodas  = _procesarMetricasCategoria(filas);
+
+    const htmlUnicas = _generarTablaHTML("Visitas Únicas · Excluye igualas · Incluye igualas con detección", statsUnicas);
+    const htmlTodas  = _generarTablaHTML("Todas las Visitas · Incluye igualas", statsTodas);
+
+    abrirModal("Resumen General de Puntos", `
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="background:#eff6ff; color:#2563eb; padding:4px 14px; border-radius:20px; font-size:0.72rem; font-weight:700; border:1px solid #bfdbfe;">📊 VISITAS ÚNICAS</span>
+        </div>
+        ${htmlUnicas}
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; margin-top:16px;">
+            <span style="background:#f0fdf4; color:#059669; padding:4px 14px; border-radius:20px; font-size:0.72rem; font-weight:700; border:1px solid #a7f3d0;">📋 TODAS LAS VISITAS</span>
+        </div>
+        ${htmlTodas}
+    `);
 };
 
 window.abrirResumenCategoriaDepto = function (nombreDepto) {
