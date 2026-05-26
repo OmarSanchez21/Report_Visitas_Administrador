@@ -2,6 +2,7 @@ import { ZohoService } from "./services/zoho.services.js";
 import { UI } from "./core/ui.js";
 import { visitasManager } from "./services/visitas.manager.js";
 import { DetalleComponent } from "./components/detalles.js";
+import { ExportService } from "./services/export.services.js";
 
 window.USER_MAP = {};
 
@@ -55,29 +56,16 @@ async function generar() {
 }
 
 function exportarExcel() {
-    const wb = XLSX.utils.book_new();
-    const sheetsConfig = [
-        { tableId: "tP",   sheetName: "Personas" },
-        { tableId: "tD",   sheetName: "Departamentos" },
-        { tableId: "tDet", sheetName: "Detalle" }
-    ];
-    let added = false;
-    sheetsConfig.forEach(({ tableId, sheetName }) => {
-        const el = document.getElementById(tableId);
-        const table = el ? el.querySelector("table") : null;
-        if(table){
-            const ws = XLSX.utils.table_to_sheet(table);
-            XLSX.utils.book_append_sheet(wb, ws, sheetName);
-            added = true;
-        }
-    });
-    if(!added){
-        Swal.fire("Sin datos", "Genera un informe primero.", "warning");
-        return;
-    }
     const fi = document.getElementById("fi").value || "inicio";
     const ff = document.getElementById("ff").value || "fin";
-    XLSX.writeFile(wb, `Ranking_Visitas_${fi}_${ff}.xlsx`);
+    ExportService.exportarDesdeTablasDOM(
+        [
+            { tableId: "tP",   sheetName: "Personas" },
+            { tableId: "tD",   sheetName: "Departamentos" },
+            { tableId: "tDet", sheetName: "Detalle" }
+        ],
+        `Ranking_Visitas_${fi}_${ff}.xlsx`
+    );
 }
 
 // Expose functions to global scope for inline onclick handlers
