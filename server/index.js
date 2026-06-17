@@ -31,7 +31,7 @@ expressApp.use('/', function (req, res, next) {
 });
 
 expressApp.get('/plugin-manifest.json', function (req, res) {
-  res.sendfile('plugin-manifest.json');
+  res.sendFile(path.join(__dirname, 'plugin-manifest.json'));
 });
 
 expressApp.use('/app', express.static('app'));

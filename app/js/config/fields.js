@@ -15,7 +15,8 @@ export const CONFIG ={
     F_DEPT_OWNER   : "Departamento" ,
     F_DEPT_COLAB   : "Departamento_de_Colaboradores" ,
     F_DETALLES     : "Detalles_de_la_Visita" ,
-    F_IGUALAS      : "Es_Iguala"
+    F_IGUALAS      : "Es_Iguala",
+    F_COMPLETADAS  : "Completada"
 }
 
 export const DEPT_COLORS = ["#2d6a9f", "#38a169", "#dd6b20", "#805ad5", "#c05621", "#2b6cb0"];

@@ -1,33 +1,21 @@
 import { ZohoService } from './zoho.services.js';
-import { UIRender } from '../core/renderer.js';
 import { CONFIG } from '../config/fields.js';
 
-const { F_OWNER, F_NOMBRE, F_CUENTA_NAME, F_FECHA, F_MODALIDAD, F_TIPO_VISITA,
+const { F_NOMBRE, F_CUENTA_NAME, F_FECHA, F_MODALIDAD, F_TIPO_VISITA,
         F_TIPO_CLIE, F_DETECCION, F_DETALLES, F_PTS_VISITA, F_PTS_CHALL,
-        F_DEPT_OWNER, F_ACOMP, F_IGUALAS } = CONFIG;
+        F_DEPT_OWNER, F_ACOMP, F_IGUALAS, F_COMPLETADAS } = CONFIG;
+
+export function esVisitaContable(row) {
+    return !row.esIguala
+        || row.deteccion === "Si"
+        || (row.tipo_visita || "").toLowerCase().includes("negocio");
+}
 
 export const visitasManager = {
-    async procesarInforme(fi, ff) {
-        const visitas = await ZohoService.fetchFullVisitas(fi, ff);
-
-        if (!visitas || visitas.length === 0) {
-            document.getElementById("cardsContainer").innerHTML =
-                `<div class="state">Sin registros para el período.</div>`;
-            ["tP", "tD", "tDet"].forEach(id => {
-                document.getElementById(id).innerHTML =
-                    `<div class="state"><span class="ico">🔍</span>Sin registros.</div>`;
-            });
-            ["lblP", "lblD", "lblDet"].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = `${fi} a ${ff}`;
-            });
-            return;
-        }
-
-        const { personaMap, deptMap, deptStats, totalVisitas, filas, visitasMap } = this._calcularMetricas(visitas);
-        window.VISITAS_MAP_GLOBAL = visitasMap;
-        window.DATOS_FILAS_GLOBAL = filas;
-        UIRender.renderizarTodo(totalVisitas, deptStats, personaMap, deptMap, fi, ff, filas);
+    async procesarInforme(fi, ff, userMap = {}) {
+        const visitas = await ZohoService.fetchFullVisitas(fi, ff, userMap);
+        if (!visitas || visitas.length === 0) return null;
+        return this._calcularMetricas(visitas);
     },
 
     _calcularMetricas(visitas) {
@@ -36,12 +24,10 @@ export const visitasManager = {
         const deptStats  = {};
         const visitasMap = {};
         const filas      = [];
-        const challengeControl = new Set();
 
         visitas.forEach(v => {
-            const ownerId   = v.ownerId;
-            const ownerName = v.ownerName || "Desconocido";
-            const ownerDept = v[F_DEPT_OWNER] || "Sin Dept";
+            const ownerName  = v.ownerName || "Desconocido";
+            const ownerDept  = v[F_DEPT_OWNER] || "Sin Dept";
             const deptsColab = v.Departamentos_Colaboradores || [];
             const pV = parseFloat(v[F_PTS_VISITA]) || 0;
             const pC = parseFloat(v[F_PTS_CHALL])  || 0;
@@ -56,12 +42,12 @@ export const visitasManager = {
                 tipo_clie:   v[F_TIPO_CLIE]   || "—",
                 deteccion:   v[F_DETECCION]   || "—",
                 detalles:    v[F_DETALLES]    || "Sin descripción",
-                ptsV: pV,
-                ptsC: pC,
-                esIguala: v[F_IGUALAS] === "Si" || v[F_IGUALAS] == "Si"
+                ptsV:       pV,
+                ptsC:       pC,
+                esIguala:   v[F_IGUALAS]    === "Si",
+                completadas: v[F_COMPLETADAS] === true || v[F_COMPLETADAS] === "true"
             };
 
-            // Mapa global para modales
             visitasMap[v.id] = {
                 ...filaBase,
                 participantes: [
@@ -74,7 +60,6 @@ export const visitasManager = {
                 ]
             };
 
-            // Fila del organizador — siempre recibe puntos completos
             filas.push({
                 ...filaBase,
                 dept:            ownerDept,
@@ -83,13 +68,11 @@ export const visitasManager = {
                 deptContraparte: deptsColab.join(", ") || "—"
             });
 
-            // Filas de colaboradores — solo si fue acompañado
             if (v[F_ACOMP] === "Si") {
                 (v.Participantes || []).forEach(c => {
-                    const colabName  = c.nombre       || "Desconocido";
-                    const colabDept  = c.departamento || "Sin Dept";
+                    const colabName   = c.nombre       || "Desconocido";
+                    const colabDept   = c.departamento || "Sin Dept";
                     const esMismoDept = colabDept === ownerDept;
-
                     filas.push({
                         ...filaBase,
                         ptsV:            pV,
@@ -103,34 +86,35 @@ export const visitasManager = {
             }
         });
 
-        // Calcular maps desde filas ya construidas
-        const challengeCtrl = new Set();
+        const globalVSet = new Set();
+
         filas.forEach(f => {
-            // deptStats (cards)
-            if (!deptStats[f.dept]){
+            if (!f.completadas) return;
+
+            if (!deptStats[f.dept])
                 deptStats[f.dept] = { vSet: new Set(), pV: 0, pC: 0 };
+
+            if (f.rol === "Organizador") {
+                deptStats[f.dept].vSet.add(f.visitaId);
+                if (esVisitaContable(f)) globalVSet.add(f.visitaId);
             }
-            if(!deptStats[f.dept].vSet) deptStats[f.dept].vSet = new Set();
-            if (f.rol === "Organizador") deptStats[f.dept].vSet.add(f.visitaId);
+
             deptStats[f.dept].pV = Number((deptStats[f.dept].pV + f.ptsV).toFixed(2));
             deptStats[f.dept].pC = Number((deptStats[f.dept].pC + f.ptsC).toFixed(2));
 
-            // personaMap
             if (!personaMap[f.persona])
                 personaMap[f.persona] = { name: f.persona, dept: f.dept, ptsV: 0, ptsC: 0, count: 0 };
             personaMap[f.persona].ptsV = Number((personaMap[f.persona].ptsV + f.ptsV).toFixed(2));
             personaMap[f.persona].ptsC = Number((personaMap[f.persona].ptsC + f.ptsC).toFixed(2));
             personaMap[f.persona].count++;
 
-            // deptMap
             if (!deptMap[f.dept])
                 deptMap[f.dept] = { dept: f.dept, ptsV: 0, ptsC: 0, count: 0 };
             deptMap[f.dept].ptsV = Number((deptMap[f.dept].ptsV + f.ptsV).toFixed(2));
             deptMap[f.dept].ptsC = Number((deptMap[f.dept].ptsC + f.ptsC).toFixed(2));
-            const key = f.nombre + "_" + f.dept;
             if (f.rol === "Organizador") deptMap[f.dept].count++;
         });
 
-        return { personaMap, deptMap, deptStats, totalVisitas: visitas.length, filas, visitasMap };
+        return { personaMap, deptMap, deptStats, totalVisitas: globalVSet.size, filas, visitasMap };
     }
 };

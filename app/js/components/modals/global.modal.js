@@ -1,16 +1,20 @@
 // global.modal.js
+let _resumenGlobalStats = null;
+
 window.abrirModalResumenGlobal = function () {
     if (!window.DATOS_FILAS_GLOBAL?.length) return;
 
-    const filas       = window.DATOS_FILAS_GLOBAL;
-    const filasUnicas = filas.filter(r => !r.esIguala || r.deteccion === "Si");
+    const filas            = window.DATOS_FILAS_GLOBAL;
+    const filasCompletadas = filas.filter(r => r.completadas);
+    const filasUnicas      = filasCompletadas.filter(r => window.esVisitaContable(r));
 
     const statsUnicas = _procesarMetricasCategoria(filasUnicas);
-    const statsTodas  = _procesarMetricasCategoria(filas);
+    const statsTodas  = _procesarMetricasCategoria(filasCompletadas);
 
-    window._resumenGlobalStats = { statsUnicas, statsTodas };
+    _resumenGlobalStats = { statsUnicas, statsTodas };
 
-    const htmlUnicas = _generarTablaHTML("Visitas Únicas · Excluye igualas · Incluye igualas con detección", statsUnicas);
+    const htmlMatriz = _generarTablaMatrizVisitas(filas);
+    const htmlUnicas = _generarTablaHTML("Visitas Únicas · Excluye igualas (excepto con detección o tipo Negocios)", statsUnicas);
     const htmlTodas  = _generarTablaHTML("Todas las Visitas · Incluye igualas", statsTodas);
 
     const contenido = [
@@ -20,13 +24,18 @@ window.abrirModalResumenGlobal = function () {
             'font-size:0.8rem; font-weight:700; cursor:pointer;">📥 Exportar Excel</button>',
         '</div>',
         '<div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">',
+            '<span style="background:#faf5ff; color:#7c3aed; padding:4px 14px; border-radius:20px;',
+            'font-size:0.72rem; font-weight:700; border:1px solid #ddd6fe;">🎯 DISTRIBUCIÓN VISITAS ÚNICAS</span>',
+        '</div>',
+        htmlMatriz,
+        '<div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; margin-top:20px;">',
             '<span style="background:#eff6ff; color:#2563eb; padding:4px 14px; border-radius:20px;',
-            'font-size:0.72rem; font-weight:700; border:1px solid #bfdbfe;">📊 VISITAS ÚNICAS</span>',
+            'font-size:0.72rem; font-weight:700; border:1px solid #bfdbfe;">📊 PUNTOS · VISITAS ÚNICAS</span>',
         '</div>',
         htmlUnicas,
         '<div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; margin-top:16px;">',
             '<span style="background:#f0fdf4; color:#059669; padding:4px 14px; border-radius:20px;',
-            'font-size:0.72rem; font-weight:700; border:1px solid #a7f3d0;">📋 TODAS LAS VISITAS</span>',
+            'font-size:0.72rem; font-weight:700; border:1px solid #a7f3d0;">📋 PUNTOS · TODAS LAS VISITAS</span>',
         '</div>',
         htmlTodas
     ].join("");
@@ -34,131 +43,22 @@ window.abrirModalResumenGlobal = function () {
     abrirModal("Resumen General de Puntos", contenido);
 
     document.getElementById("btnExportResumen")
-        .addEventListener("click", window._exportarResumenGlobal);
+        .addEventListener("click", window._exportarResumenGlobal, { once: true });
 };
 
 window._exportarResumenGlobal = function () {
-    const { statsUnicas, statsTodas } = window._resumenGlobalStats || {};
-    if (!statsUnicas || !statsTodas) return;
-
+    if (!_resumenGlobalStats) return;
+    const { statsUnicas, statsTodas } = _resumenGlobalStats;
     const fi = document.getElementById("fi").value || "inicio";
     const ff = document.getElementById("ff").value || "fin";
-    const wb = XLSX.utils.book_new();
-
-    // ── HELPERS ─────────────────────────────────────────────────────────────
-    const n = v => parseFloat(parseFloat(v).toFixed(2));  // número limpio
-    const pct = (val, tot) => tot > 0 ? Math.round((val / tot) * 100) : 0;
-
-    // Aplica negrita a la fila de encabezados de una hoja
-    function _estilizarEncabezados(ws, nCols) {
-        const range = XLSX.utils.decode_range(ws["!ref"]);
-        for (let c = 0; c < nCols; c++) {
-            const cell = XLSX.utils.encode_cell({ r: 0, c });
-            if (!ws[cell]) continue;
-            ws[cell].s = { font: { bold: true }, fill: { fgColor: { rgb: "F1F5F9" } } };
-        }
-    }
-
-    // ── HOJA 1: RESUMEN EJECUTIVO ────────────────────────────────────────────
-    function _buildResumen(stats, label) {
-        const totalGlobal = n(stats.reduce((s, r) => s + r.total, 0));
-        const headers = ["Departamento", "Negocios", "% Neg.", "Técnica", "% Téc.", 
-                         "Presencial", "% Pres.", "Virtual", "% Virt.", "Total Pts.V", "% del Global"];
-        const rows = stats.map(r => [
-            r.dept,
-            n(r.negocios),  pct(r.negocios,  r.total),
-            n(r.tecnica),   pct(r.tecnica,   r.total),
-            n(r.presencial), pct(r.presencial, r.total),
-            n(r.virtual),   pct(r.virtual,   r.total),
-            n(r.total),     pct(r.total, totalGlobal)
-        ]);
-        const totales = [
-            "TOTAL",
-            n(stats.reduce((s,r) => s + r.negocios,  0)), 100,
-            n(stats.reduce((s,r) => s + r.tecnica,   0)), 100,
-            n(stats.reduce((s,r) => s + r.presencial,0)), 100,
-            n(stats.reduce((s,r) => s + r.virtual,   0)), 100,
-            totalGlobal, 100
-        ];
-        return { label, headers, rows, totales };
-    }
-
-    const resUnicas = _buildResumen(statsUnicas, "📊 VISITAS ÚNICAS · Excluye igualas");
-    const resTodas  = _buildResumen(statsTodas,  "📋 TODAS LAS VISITAS · Incluye igualas");
-
-    // Ambas secciones en una sola hoja separadas por fila vacía
-    const resumenData = [
-        [resUnicas.label],
-        resUnicas.headers,
-        ...resUnicas.rows,
-        resUnicas.totales,
-        [],  // fila vacía separadora
-        [resTodas.label],
-        resTodas.headers,
-        ...resTodas.rows,
-        resTodas.totales
-    ];
-    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
-    XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen Ejecutivo");
-
-    // ── HOJA 2: RANKING PERSONAS ─────────────────────────────────────────────
-    const personaMap = window.DATOS_FILAS_GLOBAL
-        ? (() => {
-            const map = {};
-            window.DATOS_FILAS_GLOBAL.forEach(f => {
-                if (!map[f.persona]) map[f.persona] = { 
-                    persona: f.persona, dept: f.dept, ptsV: 0, ptsC: 0, visitas: 0 
-                };
-                map[f.persona].ptsV    = n(map[f.persona].ptsV + f.ptsV);
-                map[f.persona].ptsC    = n(map[f.persona].ptsC + f.ptsC);
-                map[f.persona].visitas += 1;
-            });
-            return Object.values(map).sort((a, b) => b.ptsV - a.ptsV);
-        })()
-        : [];
-
-    const rankingHeaders = ["#", "Persona", "Departamento", "Pts. Visita", "Pts. Challenge", "# Visitas"];
-    const rankingRows    = personaMap.map((p, i) => [
-        i + 1, p.persona, p.dept, n(p.ptsV), n(p.ptsC), p.visitas
-    ]);
-    const rankingTotales = [
-        "TOTAL", "", "",
-        n(personaMap.reduce((s, p) => s + p.ptsV, 0)),
-        n(personaMap.reduce((s, p) => s + p.ptsC, 0)),
-        personaMap.reduce((s, p) => s + p.visitas, 0)
-    ];
-
-    const wsRanking = XLSX.utils.aoa_to_sheet([rankingHeaders, ...rankingRows, rankingTotales]);
-    XLSX.utils.book_append_sheet(wb, wsRanking, "Ranking Personas");
-
-    // ── HOJA 3: DETALLE COMPLETO ─────────────────────────────────────────────
     const mostrarIgualas = document.getElementById("chkIgualas")?.checked ?? false;
-    const filasFiltradas = mostrarIgualas
-        ? window.DATOS_FILAS_GLOBAL
-        : (window.DATOS_FILAS_GLOBAL || []).filter(r => !r.esIguala || r.tipo_visita === "Negocios" || r.deteccion === "Si");
-
-    const detalleHeaders = [
-        "Visita", "Cuenta", "Fecha", "Persona", "Departamento", "Rol",
-        "Modalidad", "Tipo Visita", "Tipo Cliente", "Detección", "¿Iguala?",
-        "Pts. Visita", "Pts. Challenge"
-    ];
-    const detalleRows = filasFiltradas.map(f => [
-        f.nombre, f.cuenta, f.fecha, f.persona, f.dept, f.rol,
-        f.modalidad, f.tipo_visita, f.tipo_clie, f.deteccion,
-        f.esIguala ? "Sí" : "No",
-        n(f.ptsV), n(f.ptsC)
-    ]);
-    const detalleTotales = [
-        "", "", "", "", "", "", "", "", "", "", "TOTAL",
-        n(filasFiltradas.reduce((s, f) => s + f.ptsV, 0)),
-        n(filasFiltradas.reduce((s, f) => s + f.ptsC, 0))
-    ];
-
-    const wsDetalle = XLSX.utils.aoa_to_sheet([detalleHeaders, ...detalleRows, detalleTotales]);
-    XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle Completo");
-
-    // ── EXPORTAR ─────────────────────────────────────────────────────────────
-    XLSX.writeFile(wb, `Resumen_Global_${fi}_${ff}.xlsx`);
+    window.ExportService.exportarResumenGlobal(
+        statsUnicas, statsTodas,
+        window.PERSONA_MAP_GLOBAL,
+        window.DATOS_FILAS_GLOBAL,
+        fi, ff,
+        mostrarIgualas
+    );
 };
 
 window.abrirResumenCategoriaDepto = function (nombreDepto) {
@@ -183,6 +83,70 @@ function _procesarMetricasCategoria(filas) {
         d.total += pts;
     });
     return Object.values(deptoMap).sort((a, b) => b.total - a.total);
+}
+
+function _generarTablaMatrizVisitas(filas) {
+    // Un ID de visita = 1 visita. Solo filas del organizador evitan duplicados por colaboradores.
+    const visitas = filas.filter(f => f.rol === "Organizador" && f.completadas && window.esVisitaContable(f));
+    const total   = visitas.length;
+    if (!total) return '<div class="state">Sin visitas únicas.</div>';
+
+    const m = {
+        presencial: { negocios: 0, tecnica: 0 },
+        virtual:    { negocios: 0, tecnica: 0 }
+    };
+    visitas.forEach(f => {
+        const mod  = (f.modalidad    || "").toLowerCase() === "presencial" ? "presencial" : "virtual";
+        const tipo = (f.tipo_visita  || "").toLowerCase().includes("negocio") ? "negocios" : "tecnica";
+        m[mod][tipo]++;
+    });
+
+    const totPres = m.presencial.negocios + m.presencial.tecnica;
+    const totVirt = m.virtual.negocios    + m.virtual.tecnica;
+    const totNeg  = m.presencial.negocios + m.virtual.negocios;
+    const totTec  = m.presencial.tecnica  + m.virtual.tecnica;
+    const pct     = (v, t) => t > 0 ? Math.round((v / t) * 100) : 0;
+
+    const sH  = `padding:10px 16px; font-size:0.65rem; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; border-bottom:2px solid #e2e8f0; text-align:center; white-space:nowrap; background:#f8fafc;`;
+    const sHL = `${sH} text-align:left;`;
+    const sC  = `padding:14px 16px; font-size:0.88rem; border-bottom:1px solid #f1f5f9; text-align:center;`;
+    const sTot = `${sC} font-weight:800; background:#f8fafc; color:#0f172a;`;
+
+    const cell = (v) => `<span style="font-weight:700; font-size:1rem;">${v}</span> <span style="color:#94a3b8; font-size:0.75rem;">(${pct(v, total)}%)</span>`;
+
+    return `
+        <div style="overflow-x:auto; background:white; border-radius:12px; border:2px solid #ddd6fe; box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.08); margin-bottom:8px;">
+            <table style="width:100%; border-collapse:collapse; min-width:380px;">
+                <thead>
+                    <tr>
+                        <th style="${sHL}">Modalidad</th>
+                        <th style="${sH} color:#2563eb;">Negocios</th>
+                        <th style="${sH} color:#64748b;">Técnica</th>
+                        <th style="${sH}">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="${sC} text-align:left; font-weight:700; color:#2563eb;">🏢 Presencial</td>
+                        <td style="${sC}">${cell(m.presencial.negocios)}</td>
+                        <td style="${sC}">${cell(m.presencial.tecnica)}</td>
+                        <td style="${sTot}">${totPres} <span style="color:#94a3b8; font-size:0.75rem; font-weight:400;">(${pct(totPres, total)}%)</span></td>
+                    </tr>
+                    <tr>
+                        <td style="${sC} text-align:left; font-weight:700; color:#7c3aed;">💻 Virtual</td>
+                        <td style="${sC}">${cell(m.virtual.negocios)}</td>
+                        <td style="${sC}">${cell(m.virtual.tecnica)}</td>
+                        <td style="${sTot}">${totVirt} <span style="color:#94a3b8; font-size:0.75rem; font-weight:400;">(${pct(totVirt, total)}%)</span></td>
+                    </tr>
+                    <tr>
+                        <td style="${sTot} text-align:left; color:#0f172a;">Total</td>
+                        <td style="${sTot} color:#2563eb;">${totNeg}</td>
+                        <td style="${sTot} color:#64748b;">${totTec}</td>
+                        <td style="${sTot} background:#ede9fe; color:#7c3aed; font-size:1.05rem;">${total}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>`;
 }
 
 function _generarTablaHTML(subtitulo, rows) {

@@ -25,9 +25,10 @@ export const CardsComponent = {
                 </div>
             </div>
         </div>`;
+        const enc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
         list.forEach(([dept, s], i) => {
             const col = DEPT_COLORS[i % DEPT_COLORS.length] || "#ccc";
-            html += `<div class="card card-dept" style="border-top: 4px solid ${col}; border-left: 4px solid ${col}; cursor:pointer;" onclick="window.abrirResumenCategoriaDepto('${dept}')">
+            html += `<div class="card card-dept" data-dept="${enc(dept)}" style="border-top: 4px solid ${col}; border-left: 4px solid ${col}; cursor:pointer;">
                 <div class="card-lbl" style="font-weight:700; color:#475569;">${dept}</div>
                 <div class="card-dept-stats" style="margin-top:10px;">
                     <div class="card-dept-stat">
@@ -48,5 +49,9 @@ export const CardsComponent = {
 
         html += `</div>`;
         document.getElementById("cardsContainer").innerHTML = html;
+
+        document.querySelectorAll('.card-dept[data-dept]').forEach(card => {
+            card.addEventListener('click', () => window.abrirResumenCategoriaDepto(card.dataset.dept));
+        });
     }
 };
