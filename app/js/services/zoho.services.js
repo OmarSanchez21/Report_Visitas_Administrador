@@ -2,7 +2,7 @@ import { CONFIG } from "../config/fields.js";
 
 export const ZohoService = {
     async runCOQL(query){
-        const cleanQuery = query.replace(/\s+/g, ' ').trim(); // Elimina espacios fantasma
+        const cleanQuery = query.replace(/\s+/g, ' ').trim();
         const resp = await ZOHO.CRM.API.coql({ select_query: cleanQuery });
         console.log("Respuesta COQL:", resp);
         if(!resp.data && !resp.info) throw new Error("Error: La consulta no devolvió datos");
@@ -48,7 +48,7 @@ export const ZohoService = {
         return participantes;
     },
 
-    async fetchFullVisitas(fi, ff){
+    async fetchFullVisitas(fi, ff, userMap = {}){
         console.log(`ZohoService: Fetching visitas from ${fi} to ${ff}`);
         const query = `
             SELECT
@@ -66,15 +66,14 @@ export const ZohoService = {
                 ${CONFIG.F_TIPO_VISITA},
                 ${CONFIG.F_TIPO_CLIE},
                 ${CONFIG.F_DETALLES},
-                ${CONFIG.F_IGUALAS}
+                ${CONFIG.F_IGUALAS},
+                ${CONFIG.F_COMPLETADAS}
             FROM Visita
             WHERE ${CONFIG.F_FECHA} >= '${fi}' and  ${CONFIG.F_FECHA} <= '${ff}'
         `;
-        
+
         const visitas = await this.runCOQLPaged(query);
-        console.log(`Primeras visitas obtenidas:`, visitas.slice(0, 5));
         console.log(`Visitas obtenidas: ${visitas.length}`);
-        await new Promise(r => setTimeout(r, 500));
         const participantesRAW = await this.fetchAllParticipants();
 
         const participantesMap = {};
@@ -96,7 +95,7 @@ export const ZohoService = {
             return {
                 ...v,
                 ownerId: v[CONFIG.F_OWNER]?.id,
-                ownerName: window.USER_MAP?.[v.Owner?.id]?.name || "Desconocido",
+                ownerName: userMap[v[CONFIG.F_OWNER]?.id]?.name || "Desconocido",
                 [CONFIG.F_PTS_CHALL]:  Number(pChall.toFixed(2)),
                 [CONFIG.F_PTS_VISITA]: Number(pVisita.toFixed(2)),
                 Participantes: participantes,
@@ -110,14 +109,12 @@ export const ZohoService = {
         try {
             console.log("ZohoService: Fetching all active users...");
             const data = await ZOHO.CRM.API.getAllUsers({ Type: "ActiveUsers" });
-            console.log("ZohoService: Users response:", data);
             const userMap = {};
             if(data.users){
                 data.users.forEach(user => {
                     userMap[user.id] = { id: user.id, email: user.email, name: user.full_name };
                 });
             }
-            console.log("ZohoService: Active users fetched:", data);
             return userMap;
         } catch (error) {
             console.error("Error in ZohoService.fetchAllUsers:", error);

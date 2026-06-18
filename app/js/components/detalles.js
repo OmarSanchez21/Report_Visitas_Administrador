@@ -1,14 +1,17 @@
+import { esVisitaContable } from '../services/visitas.manager.js';
+
 const fecha = f => {
     if (!f) return '—';
-    const [y,m,d] = f.split("-"); 
+    const [y,m,d] = f.split("-");
     return `${d}/${m}/${y}`;
 };
 export const DetalleComponent = {
     render(filas) {
         const mostrarIgualas = document.getElementById("chkIgualas")?.checked ?? false;
-        const filasFiltradas = mostrarIgualas ? filas : filas.filter(r => !r.esIguala || r.tipo_visita === "Negocios" || r.deteccion === "Si");
+        const filasFiltradas = mostrarIgualas ? filas : filas.filter(esVisitaContable);
         const container = document.getElementById("tDet");
         if (!filasFiltradas.length) { container.innerHTML = `<div class="state">Sin registros</div>`; return; }
+        const enc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
         const grupos = {};
         filasFiltradas.forEach(f => {
@@ -30,7 +33,7 @@ export const DetalleComponent = {
             </tr>`;
             
             tbody += rows.map(r => `
-            <tr onclick="window.abrirDetalleVisita('${r.visitaId}', '${r.persona}')" style="cursor:pointer">
+            <tr data-visita-id="${enc(r.visitaId)}" data-persona="${enc(r.persona)}" style="cursor:pointer" ${!r.completadas ? 'class="fila-pendiente"' : ''}>
                 <td><span class="nm">${r.nombre}</span></td>
                 <td>${r.cuenta}</td>
                 <td>${r.tipo_visita}</td> 
@@ -62,5 +65,9 @@ export const DetalleComponent = {
                 <tbody>${tbody}</tbody>
             </table>
         `;
+
+        container.querySelectorAll('tbody tr[data-visita-id]').forEach(tr => {
+            tr.addEventListener('click', () => window.abrirDetalleVisita(tr.dataset.visitaId, tr.dataset.persona));
+        });
     }
 };
