@@ -13,7 +13,7 @@ export const UI = {
         );
     },
     setLoading(){
-        ["tP","tD","tDet","tPlan"].forEach(id =>
+        ["tP","tD","tDet"].forEach(id =>
             document.getElementById(id).innerHTML = `<div class="state"><div class="loader"></div></div>`
         );
         document.getElementById("cardsContainer").innerHTML = "";

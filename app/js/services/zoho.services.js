@@ -66,8 +66,7 @@ export const ZohoService = {
                 ${CONFIG.F_TIPO_VISITA},
                 ${CONFIG.F_TIPO_CLIE},
                 ${CONFIG.F_DETALLES},
-                ${CONFIG.F_IGUALAS},
-                ${CONFIG.F_COMPLETADAS}
+                ${CONFIG.F_IGUALAS}
             FROM Visita
             WHERE ${CONFIG.F_FECHA} >= '${fi}' and  ${CONFIG.F_FECHA} <= '${ff}'
         `;

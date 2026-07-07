@@ -33,7 +33,7 @@ export const DetalleComponent = {
             </tr>`;
             
             tbody += rows.map(r => `
-            <tr data-visita-id="${enc(r.visitaId)}" data-persona="${enc(r.persona)}" style="cursor:pointer" ${!r.completadas ? 'class="fila-pendiente"' : ''}>
+            <tr data-visita-id="${enc(r.visitaId)}" data-persona="${enc(r.persona)}" style="cursor:pointer">
                 <td><span class="nm">${r.nombre}</span></td>
                 <td>${r.cuenta}</td>
                 <td>${r.tipo_visita}</td> 
