@@ -21,6 +21,44 @@ export const visitasManager = {
 
         const resultado = this._calcularMetricas(visitasEstandar);
         resultado.filasPlanificadas = this._buildFilasPlanificadas(visitasPlanificadas);
+
+        // Merge VISITA PLANIFICADA entries into visitasMap so that clicking a
+        // row in the Planificadas tab can resolve the visit via
+        // window.VISITAS_MAP_GLOBAL and open the detail modal correctly.
+        visitasPlanificadas.forEach(v => {
+            const ownerName = v.ownerName        || "Desconocido";
+            const ownerDept = v[F_DEPT_OWNER]    || "Sin Dept";
+            const pV        = parseFloat(v[F_PTS_VISITA]) || 0;
+            const pC        = parseFloat(v[F_PTS_CHALL])  || 0;
+
+            const filaBase = {
+                visitaId:    v.id,
+                nombre:      v[F_NOMBRE]      || "",
+                cuenta:      v[F_CUENTA_NAME] || "—",
+                fecha:       (v[F_FECHA] || "").split("T")[0],
+                modalidad:   v[F_MODALIDAD]   || "—",
+                tipo_visita: v[F_TIPO_VISITA] || "—",
+                tipo_clie:   v[F_TIPO_CLIE]   || "—",
+                deteccion:   v[F_DETECCION]   || "—",
+                detalles:    v[F_DETALLES]    || "Sin descripción",
+                ptsV:        pV,
+                ptsC:        pC,
+                esIguala:    v[F_IGUALAS]     === "Si"
+            };
+
+            resultado.visitasMap[v.id] = {
+                ...filaBase,
+                participantes: [
+                    { nombre: ownerName, departamento: ownerDept, rol: "Organizador" },
+                    ...(v.Participantes || []).map(c => ({
+                        nombre:       c.nombre       || "Desconocido",
+                        departamento: c.departamento || "Sin Dept",
+                        rol:          "Colaborador"
+                    }))
+                ]
+            };
+        });
+
         return resultado;
     },
 
