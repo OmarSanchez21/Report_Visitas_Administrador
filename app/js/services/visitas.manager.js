@@ -3,7 +3,7 @@ import { CONFIG } from '../config/fields.js';
 
 const { F_NOMBRE, F_CUENTA_NAME, F_FECHA, F_MODALIDAD, F_TIPO_VISITA,
         F_TIPO_CLIE, F_DETECCION, F_DETALLES, F_PTS_VISITA, F_PTS_CHALL,
-        F_DEPT_OWNER, F_ACOMP, F_IGUALAS } = CONFIG;
+        F_DEPT_OWNER, F_ACOMP, F_IGUALAS, F_LAYOUT } = CONFIG;
 
 export function esVisitaContable(row) {
     return !row.esIguala
@@ -15,7 +15,51 @@ export const visitasManager = {
     async procesarInforme(fi, ff, userMap = {}) {
         const visitas = await ZohoService.fetchFullVisitas(fi, ff, userMap);
         if (!visitas || visitas.length === 0) return null;
-        return this._calcularMetricas(visitas);
+
+        const visitasEstandar     = visitas.filter(v => v[F_LAYOUT] !== 'VISITA PLANIFICADA');
+        const visitasPlanificadas = visitas.filter(v => v[F_LAYOUT] === 'VISITA PLANIFICADA');
+
+        const resultado = this._calcularMetricas(visitasEstandar);
+        resultado.filasPlanificadas = this._buildFilasPlanificadas(visitasPlanificadas);
+
+        // Merge VISITA PLANIFICADA entries into visitasMap so that clicking a
+        // row in the Planificadas tab can resolve the visit via
+        // window.VISITAS_MAP_GLOBAL and open the detail modal correctly.
+        visitasPlanificadas.forEach(v => {
+            const ownerName = v.ownerName        || "Desconocido";
+            const ownerDept = v[F_DEPT_OWNER]    || "Sin Dept";
+            const pV        = parseFloat(v[F_PTS_VISITA]) || 0;
+            const pC        = parseFloat(v[F_PTS_CHALL])  || 0;
+
+            const filaBase = {
+                visitaId:    v.id,
+                nombre:      v[F_NOMBRE]      || "",
+                cuenta:      v[F_CUENTA_NAME] || "—",
+                fecha:       (v[F_FECHA] || "").split("T")[0],
+                modalidad:   v[F_MODALIDAD]   || "—",
+                tipo_visita: v[F_TIPO_VISITA] || "—",
+                tipo_clie:   v[F_TIPO_CLIE]   || "—",
+                deteccion:   v[F_DETECCION]   || "—",
+                detalles:    v[F_DETALLES]    || "Sin descripción",
+                ptsV:        pV,
+                ptsC:        pC,
+                esIguala:    v[F_IGUALAS]     === "Si"
+            };
+
+            resultado.visitasMap[v.id] = {
+                ...filaBase,
+                participantes: [
+                    { nombre: ownerName, departamento: ownerDept, rol: "Organizador" },
+                    ...(v.Participantes || []).map(c => ({
+                        nombre:       c.nombre       || "Desconocido",
+                        departamento: c.departamento || "Sin Dept",
+                        rol:          "Colaborador"
+                    }))
+                ]
+            };
+        });
+
+        return resultado;
     },
 
     _calcularMetricas(visitas) {
@@ -113,5 +157,25 @@ export const visitasManager = {
         });
 
         return { personaMap, deptMap, deptStats, totalVisitas: globalVSet.size, filas, visitasMap };
+    },
+
+    _buildFilasPlanificadas(visitas) {
+        return visitas.map(v => ({
+            visitaId:    v.id,
+            nombre:      v[F_NOMBRE]      || "",
+            cuenta:      v[F_CUENTA_NAME] || "—",
+            fecha:       (v[F_FECHA] || "").split("T")[0],
+            modalidad:   v[F_MODALIDAD]   || "—",
+            tipo_visita: v[F_TIPO_VISITA] || "—",
+            tipo_clie:   v[F_TIPO_CLIE]   || "—",
+            deteccion:   v[F_DETECCION]   || "—",
+            detalles:    v[F_DETALLES]    || "Sin descripción",
+            ptsV:        parseFloat(v[F_PTS_VISITA]) || 0,
+            ptsC:        parseFloat(v[F_PTS_CHALL])  || 0,
+            esIguala:    v[F_IGUALAS]     === "Si",
+            dept:        v[F_DEPT_OWNER]  || "Sin Dept",
+            persona:     v.ownerName      || "Desconocido",
+            rol:         "Organizador"
+        }));
     }
 };
