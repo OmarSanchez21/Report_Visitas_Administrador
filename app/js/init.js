@@ -49,7 +49,16 @@ async function generar() {
             window.VISITAS_MAP_GLOBAL  = result.visitasMap;
             window.DATOS_FILAS_GLOBAL  = result.filas;
             window.PERSONA_MAP_GLOBAL  = result.personaMap;
-            UIRender.renderizarTodo(result.totalVisitas, result.deptStats, result.personaMap, result.deptMap, fi, ff, result.filas);
+            UIRender.renderizarTodo(
+                result.totalVisitas,
+                result.deptStats,
+                result.personaMap,
+                result.deptMap,
+                fi,
+                ff,
+                result.filas,
+                result.filasPlanificadas
+            );
         }
     } catch (error) {
         console.error("Error al procesar el informe:", error);
