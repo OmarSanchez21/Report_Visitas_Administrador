@@ -12,15 +12,7 @@ export const PlanificadasComponent = {
             return;
         }
 
-        // Una fila por visita (solo organizador), filtrada a no completadas
-        const planificadas = filas
-            .filter(f => f.rol === "Organizador" && !f.completadas)
-            .sort((a, b) => a.fecha.localeCompare(b.fecha));
-
-        if (!planificadas.length) {
-            container.innerHTML = `<div class="state"><span class="ico">✅</span>No hay visitas planificadas pendientes.</div>`;
-            return;
-        }
+        const planificadas = filas.slice().sort((a, b) => a.fecha.localeCompare(b.fecha));
 
         const enc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
