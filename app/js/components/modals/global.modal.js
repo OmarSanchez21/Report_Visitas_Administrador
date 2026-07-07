@@ -4,12 +4,11 @@ let _resumenGlobalStats = null;
 window.abrirModalResumenGlobal = function () {
     if (!window.DATOS_FILAS_GLOBAL?.length) return;
 
-    const filas            = window.DATOS_FILAS_GLOBAL;
-    const filasCompletadas = filas.filter(r => r.completadas);
-    const filasUnicas      = filasCompletadas.filter(r => window.esVisitaContable(r));
+    const filas       = window.DATOS_FILAS_GLOBAL;
+    const filasUnicas = filas.filter(r => window.esVisitaContable(r));
 
     const statsUnicas = _procesarMetricasCategoria(filasUnicas);
-    const statsTodas  = _procesarMetricasCategoria(filasCompletadas);
+    const statsTodas  = _procesarMetricasCategoria(filas);
 
     _resumenGlobalStats = { statsUnicas, statsTodas };
 
@@ -87,7 +86,7 @@ function _procesarMetricasCategoria(filas) {
 
 function _generarTablaMatrizVisitas(filas) {
     // Un ID de visita = 1 visita. Solo filas del organizador evitan duplicados por colaboradores.
-    const visitas = filas.filter(f => f.rol === "Organizador" && f.completadas && window.esVisitaContable(f));
+    const visitas = filas.filter(f => f.rol === "Organizador" && window.esVisitaContable(f));
     const total   = visitas.length;
     if (!total) return '<div class="state">Sin visitas únicas.</div>';
 

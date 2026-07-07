@@ -16,9 +16,7 @@ thead th {
 }
 
 tbody tr { border-bottom: 1px solid #f1f5f9; }
-tbody tr:hover:not(.dept-row):not(.subtotal-row):not(.fila-pendiente) { background: #f8fafc; }
-.fila-pendiente { background: #fef9e7; }
-tbody .fila-pendiente:hover { background: #fef3c7; }
+tbody tr:hover:not(.dept-row):not(.subtotal-row) { background: #f8fafc; }
 td { padding: 4px 10px; font-size: 0.86rem !important; color: #4a5568; }
 
 .dept-row td { background: #f0f7ff; font-weight: 800; color: #1e3a5f; border-bottom: 1px solid #bee3f8; }

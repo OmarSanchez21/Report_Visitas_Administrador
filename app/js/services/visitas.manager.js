@@ -3,7 +3,7 @@ import { CONFIG } from '../config/fields.js';
 
 const { F_NOMBRE, F_CUENTA_NAME, F_FECHA, F_MODALIDAD, F_TIPO_VISITA,
         F_TIPO_CLIE, F_DETECCION, F_DETALLES, F_PTS_VISITA, F_PTS_CHALL,
-        F_DEPT_OWNER, F_ACOMP, F_IGUALAS, F_COMPLETADAS } = CONFIG;
+        F_DEPT_OWNER, F_ACOMP, F_IGUALAS } = CONFIG;
 
 export function esVisitaContable(row) {
     return !row.esIguala
@@ -44,8 +44,7 @@ export const visitasManager = {
                 detalles:    v[F_DETALLES]    || "Sin descripción",
                 ptsV:       pV,
                 ptsC:       pC,
-                esIguala:   v[F_IGUALAS]    === "Si",
-                completadas: v[F_COMPLETADAS] === true || v[F_COMPLETADAS] === "true"
+                esIguala:   v[F_IGUALAS]    === "Si"
             };
 
             visitasMap[v.id] = {
@@ -89,8 +88,6 @@ export const visitasManager = {
         const globalVSet = new Set();
 
         filas.forEach(f => {
-            if (!f.completadas) return;
-
             if (!deptStats[f.dept])
                 deptStats[f.dept] = { vSet: new Set(), pV: 0, pC: 0 };
 

@@ -56,7 +56,7 @@ export const ExportService = {
         }
 
         // Hoja 1: Distribución Visitas Únicas (matriz Presencial/Virtual × Negocios/Técnica)
-        const visitasOrg = filas.filter(f => f.rol === "Organizador" && f.completadas && esVisitaContable(f));
+        const visitasOrg = filas.filter(f => f.rol === "Organizador" && esVisitaContable(f));
         const m = {
             presencial: { negocios: 0, tecnica: 0 },
             virtual:    { negocios: 0, tecnica: 0 }
